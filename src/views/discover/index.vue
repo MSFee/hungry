@@ -1,8 +1,5 @@
 <template>
-  <div>
-      <HelloWorld msg="测试"></HelloWorld>
-       <router-view/>
-  </div>
+  <router-view />
 </template>
 
 <script>

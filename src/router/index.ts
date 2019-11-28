@@ -18,6 +18,12 @@ const routes = [
     path: '/discover',
     name: 'discover',
     component: () => import('../views/discover/index.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('../views/discover/discover.vue'),
+      },
+    ],
   },
   {
     path: '/order',

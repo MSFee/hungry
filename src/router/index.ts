@@ -23,6 +23,16 @@ const routes = [
     path: '/order',
     name: 'order',
     component: () => import('../views/order/index.vue'),
+    children: [
+      {
+        path:'',
+        component: () => import('../views/order/orderList.vue'),
+      },
+      {
+        path:'deatil',
+        component: () => import('../views/order/detail/index.vue'),
+      }
+    ]
   },
   {
     path: '/profile',

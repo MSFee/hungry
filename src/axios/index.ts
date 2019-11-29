@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 let instance = axios.create({
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://106.54.193.152:3000',
     timeout: 5000,
     headers: {'Content-Type': 'application/x-www-form-urlencoded;'}
 });

@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import { bus } from '../main'
 
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
@@ -50,13 +51,30 @@ const routes = [
         component: () => import('../views/profile/home/index.vue'),
       },
       {
-        path:'test',
-        component: () => import('../views/profile/test/index.vue'),
+        path:'info',
+        component: () => import('../views/profile/info/index.vue'),
       },
       {
         path: 'address',
         name: 'address',
         component: () => import('../views/profile/address/index.vue'),
+        children: [
+          {
+            path:'',
+            name: 'address',
+            component: () => import('../views/profile/address/address.vue'),
+          }, 
+          {
+            path: 'add',
+            name: 'add',
+            component: () => import('../views/profile/address/add/index.vue')
+          }
+        ]
+      },
+      {
+        path:'/login',
+        name:'login',
+        component: () => import('../views/login/index.vue'),
       }
     ],
     meta: {
@@ -70,5 +88,19 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+// router.afterEach(function(to: any,from: any){
+//     if (to.path === '/profile' || to.path === '/msite' || to.path === '/order' || to.path === '/discover')
+//     {
+//         bus.$emit('visiable', true);
+//     } else {
+//       console.log('ss');
+//       bus.$emit('visiable', false);
+//     }
+//     console.log('进入守卫')
+//     console.log(to);
+//     console.log(from);
+
+// })
 
 export default router

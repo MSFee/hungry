@@ -1,6 +1,6 @@
 <template>
     <div class="profile">
-        <div class="profile_header">
+        <div @click="goInfo" class="profile_header">
             <div class="profile_header_main">
                 <div class="profile_header_img">
                     <van-image
@@ -27,7 +27,7 @@
                 <div>金币</div>
             </div>
         </div>
-        <div class="profile_address public">
+        <div @click="toAddressDetail" class="profile_address public">
             <div>
                 <span> <van-icon color="rgb(74,165,240)" name="location" /> 我的地址</span>
             </div>
@@ -73,9 +73,12 @@
 import axios from 'axios';
 export default {
     methods:{
-        test(){
+        toAddressDetail(){
             this.$router.push('/profile/address');
         },
+        goInfo(){
+            this.$router.push('/login');
+        }
     }
 }
 </script>

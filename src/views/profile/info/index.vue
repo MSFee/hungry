@@ -18,7 +18,7 @@
         <div class="info_header_username">
           <span class="left">用户名</span>
           <span class="right theme_color">
-            38ba8eb97
+            {{ userInfo.username }}
             <span id="info_arrow"/>
           </span>
         </div>
@@ -30,7 +30,7 @@
           <div class="info_count_tel">
               <div class="left"> <van-icon color="rgb(0,151,255)" name="phone-o" />手机</div>
               <span class="right">
-                1522****5271 
+               {{ userInfo.tel }}
                 <span id="info_arrow"></span>
               </span>
           </div>
@@ -47,7 +47,7 @@
               </span>
           </div>
       </div>
-      <div class="info_out">
+      <div @click="exitLogin" class="info_out">
           退出登录
       </div>
   </div>
@@ -56,13 +56,33 @@
 <script>
 import { bus } from '../../../main';
 export default {
+  data() {
+    return {
+      userInfo: undefined,
+    }
+  },
   methods:{
         setNavVisiable:function() {
         bus.$emit('visiable',false);
       },
+      exitLogin() {
+        localStorage.removeItem('userInfo');
+        this.$router.push('/profile');
+      },
+      getUserInfo() {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo')).userInfo;
+        const userId = userInfo.userId;
+        this.$axios({
+          method: 'get',
+          url: `/getUserInfo?userId = ${userId}`
+        }).then(res => {
+         this.userInfo = res.user;
+        })
+      }
   },
   created(){
      this.setNavVisiable();
+     this.getUserInfo();
   }
 }
 </script>

@@ -1,20 +1,15 @@
 import axios from 'axios';
 
 let instance = axios.create({
-    baseURL: 'http://106.54.193.152:3000',
+    baseURL: 'http://localhost:3000',
     timeout: 5000,
-    headers: {'Content-Type': 'application/x-www-form-urlencoded;'}
+    headers: {'Content-Type': 'application/json'}
 });
 
 instance.interceptors.request.use(config => {
     if (config.method === 'post') {
         config.data = JSON.parse(JSON.stringify(config.data));
     }
-    // if (config.method === 'get') {
-    //     const data = config.data;
-    //     const url = config.url;
-    //     return config;
-    // }
     return config; 
 },error => {
     return Promise.reject(error);

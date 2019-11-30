@@ -1,6 +1,6 @@
 <template>
     <div class="profile">
-        <div @click="goInfo" class="profile_header">
+        <div @click="toLoginOrInfo" class="profile_header">
             <div class="profile_header_main">
                 <div class="profile_header_img">
                     <van-image
@@ -11,8 +11,8 @@
                     />
                 </div>
                 <div class="profile_header_info">
-                    <div>38ba83b97</div>
-                    <div><van-icon name="phone-o" />1522****5271</div>
+                    <div>{{ userInfo ? userInfo.username : '登录/注册' }}</div>
+                    <div><van-icon name="phone-o" />{{ userInfo ? userInfo.tel : '登陆后享受更多特权' }}</div>
                 </div>
                 <div class="profile_header_deatil" />
             </div>
@@ -72,13 +72,31 @@
 <script>
 import axios from 'axios';
 export default {
+    data(){
+        return {
+            userInfo: undefined,
+        }
+    },
     methods:{
         toAddressDetail(){
             this.$router.push('/profile/address');
         },
-        goInfo(){
-            this.$router.push('/login');
+        toLoginOrInfo(){
+            if(this.userInfo) {
+                this.$router.push('/profile/info');
+            } else {
+                this.$router.push('/login');
+            }
+        },
+        setUserInfo(){
+            const result = JSON.parse(localStorage.getItem('userInfo'));
+            if(result) {
+                this.userInfo = result.userInfo;
+            }
         }
+    },
+    created(){
+        this.setUserInfo();
     }
 }
 </script>

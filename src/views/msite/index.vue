@@ -4,14 +4,17 @@
         <div class="msite_location">
           <van-icon name="location"/>
           <div v-if="loadingLocation">正在识别地址...</div>
-          <div v-else> {{initLocation}} </div>
+          <div v-else> {{initLocation}}<van-icon class="msite_location_arrow" name="arrow-down" /> </div>
         </div>
         <div class="msite_search">
-         <van-cell-group>
-           <van-field v-model="value" placeholder="搜索饿了么商家、商品名称" />
-         </van-cell-group> 
+          <div class="msite_search_content">
+            <van-cell-group>
+              <van-field v-model="value" placeholder="搜索饿了么商家、商品名称" />
+            </van-cell-group> 
+            </div>
         </div>
     </div>
+  <div v-if="successLoadingLocation">
     <div class="msite_allogo">
       <van-tabs  swipeable animated line-width="10px" color="#ccc">
           <van-tab > 
@@ -62,15 +65,26 @@
         </div>
         <div>
           立即开通>
-        </div>
     </div>
-  <baidu-map :center="center" :zoom="zoom" @ready="handler">
-  </baidu-map>
-  <div class="msite_businessman">
-        推荐商家
   </div>
-  <ListofGoods></ListofGoods>
+   <div class="msite_businessman">
+        推荐商家
+   </div>
+    <ListofGoods></ListofGoods>
    <router-view/>
+  </div>
+  <div class="msite_noLocation" v-else>
+      <img src="http://fuss10.elemecdn.com/2/67/64f199059800f254c47e16495442bgif.gif" />
+      <div :style="{'color':'#666'}">输入地址后才能订餐哦!</div>
+      <van-popup
+        v-model="show"
+        position="right"
+        :style="{ height: '100%', width:'100%' }"
+      />
+      <div @click="showPopup">手动选择地址</div>
+  </div>
+    <baidu-map :center="center" :zoom="zoom" @ready="handler">
+  </baidu-map>
   </div>
 </template>
 <script>
@@ -83,6 +97,8 @@ export default {
     return {
       center:{lng: 0,lat:0},
       zoom:3,
+      show: false,
+      successLoadingLocation: true, // 加载地址是否成功
       loadingLocation: true,
       initLocation: undefined,
       logoImg: [],
@@ -101,11 +117,18 @@ export default {
 						map.addOverlay(mk);
             map.panTo(r.point);
             const address = r.address;
-            _this.initLocation = `${address.city}${address.district}${address.street}${address.street_number}`
-            _this.loadingLocation = false;
+            console.log(r);
+            if(address.district === '') {
+              _this.initLocation = '未能获取地址' ;
+               _this.successLoadingLocation = true;
+            } else {
+              _this.initLocation = `${address.city}${address.district}${address.street}${address.street_number}`;
+              _this.successLoadingLocation = true;
+            }
+              _this.loadingLocation = false;
 					}
 					else {
-						_this.initLocation = '获取定位失败';
+						_this.initLocation = '未能获取地址';
 					}
 				},{enableHighAccuracy: true})
       },
@@ -118,6 +141,9 @@ export default {
             this.logoImgTab1 = res.list.slice(0,10);
             this.logoImgTab2 = res.list.slice(10);
           })
+      },
+      showPopup(){
+        this.show = true;
       }
   },
   created(){
@@ -130,12 +156,34 @@ export default {
   width: 100%;
   height:calc(~"100% - 60px");
   overflow-y: auto;
+  &_noLocation {
+     width: 60%;
+     margin: 0 auto;
+     display: flex;
+     height: 300px;
+     align-items: center;
+     flex-direction: column;
+     img {
+       width: 200px;
+       height: 200px;
+     }
+     div:last-child {
+       background: rgb(86,209,118);
+       margin-top: 10px;
+       line-height: 60px;
+       text-align: center;
+       font-size: 28px;
+       color: white;
+       height: 60px;
+       width: 200px;
+     }
+  }
   .msite_header {
    background: rgb(0,137,255);
    height: 100px;
+   overflow: hidden;
    padding-left: 14px;
    padding-right: 14px;
-   overflow: hidden;
   .msite_location{
     display: flex;
     margin-top: 9px;
@@ -144,7 +192,12 @@ export default {
     margin-bottom: 12px;
     align-items: baseline;
     color: white;
+    &_arrow {
+      margin-left: 5px;
+      font-size: 10px;
+    }
   }
+
   }
   .msite_allogo {
     height: 180px;

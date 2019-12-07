@@ -6,20 +6,20 @@
             我的地址
         </div>
         <div class="address_body">
-          <div v-for="item in ret" :key="item" class="address_content_main">
+          <div v-for="(item,id) in addressList" :key="id" class="address_content_main">
             <div class="address_content_main_desc">
                 <div>
-                  <span class="name">长得帅</span>
-                  <span class="sex">先生</span>
-                  <span class="tel">17855689902</span>
+                  <span class="name">{{ item.username }}</span>
+                  <!-- <span class="sex">先生</span> -->
+                  <span class="tel">{{ item.phone }}</span>
                 </div>
-                <div class="addressAetail">             
-                   华新文登考研(大学路)四川省成都市新都区大学路与正因北街西五巷交叉口南50米22
+                <div class="addressAetail">       
+                  {{item.province}}{{item.city}}{{item.area}}{{ item.detailAddress }}{{item.houseNumber}}     
                 </div>
             </div>
             <div class="address_content_main_option">
-                <span><van-icon name="edit" /></span>
-                <span><van-icon name="cross" /></span>
+                <span @click="editAddress(item.id)"><van-icon name="edit" /></span>
+                <span @click="deleteAddress(item.id)"><van-icon name="cross" /></span>
             </div>
          </div>
         </div>
@@ -33,7 +33,7 @@ import { bus } from '../../../main';
 export default {
   data() {
     return {
-      ret : [1,2,3,4,5,6,7],
+      addressList: [],
     }
   },
   methods: {
@@ -47,10 +47,50 @@ export default {
         this.$router.push({
             name: 'add',
         })
+    },
+    getAddressList(){
+      const userId = JSON.parse(localStorage.getItem('userInfo')).userInfo.userId;
+      this.$axios({
+        method: 'get',
+        url: `/get_address?userId=${userId}`,
+      }).then(res=>{
+        this.addressList = res.data;
+
+      })
+    },
+    editAddress(addressId){
+       this.$router.push({
+         name: 'add',
+          query: { 
+            addressId,
+          }
+       })
+    },
+    deleteAddress(addressId){
+      this.$dialog.confirm({
+          title: '删除地址',
+          message: '是否删除地址'
+        }).then(() => {
+          const id = addressId;
+          const userId = JSON.parse(localStorage.getItem('userInfo')).userInfo.userId;
+          const data = {
+            id,
+            userId,
+          }
+          this.$axios({
+            method: 'post',
+            url: '/delete_address',
+            data,
+          }).then(res=>{
+               this.getAddressList();
+          })
+        }).catch(() => {
+        });
     }
   },
   created(){
     this.setNavVisiable();
+    this.getAddressList();
   }
 }
 </script>

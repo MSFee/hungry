@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view />
+      <router-view />
     <Nav v-if="visiable"/>
   </div>
 </template>
@@ -19,7 +19,7 @@ export default {
   },
   created(){
      bus.$on('visiable', data => {
-          this.visiable = data;
+        this.visiable = data;
     })
   }
 }

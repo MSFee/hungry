@@ -9,7 +9,9 @@ import { bus } from '../../main';
 export default {
     watch:{
         '$route' : (to,from) =>{
-            bus.$emit('visiable', true);
+            if(from.name === 'address') {
+                bus.$emit('visiable', true);
+            }
         }
     }
 }

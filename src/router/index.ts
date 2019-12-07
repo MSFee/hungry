@@ -55,7 +55,6 @@ const routes = [
       },
       {
         path: 'address',
-        name: 'address',
         component: () => import('../views/profile/address/index.vue'),
         children: [
           {
@@ -66,7 +65,12 @@ const routes = [
           {
             path: 'add',
             name: 'add',
-            component: () => import('../views/profile/address/add/index.vue')
+            component: () => import('../views/profile/address/add/index.vue'), 
+          },
+          {
+            path: 'search',
+            name: 'search',
+            component: () => import('../views/profile/address/search/index.vue'),
           }
         ]
       },
@@ -88,18 +92,5 @@ const router = new VueRouter({
   routes
 })
 
-// router.afterEach(function(to: any,from: any){
-//     if (to.path === '/profile' || to.path === '/msite' || to.path === '/order' || to.path === '/discover')
-//     {
-//         bus.$emit('visiable', true);
-//     } else {
-//       console.log('ss');
-//       bus.$emit('visiable', false);
-//     }
-//     console.log('进入守卫')
-//     console.log(to);
-//     console.log(from);
-
-// })
 
 export default router

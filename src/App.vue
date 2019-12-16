@@ -1,7 +1,7 @@
 <template>
   <div id="app">
       <router-view />
-    <Nav v-if="visiable"/>
+    <Nav :active.sync="isCheck" v-if="visiable"/>
   </div>
 </template>
 <script>
@@ -13,20 +13,27 @@ export default {
   },
   data(){
     return {
-      active: 0,
       visiable: true,
+      isCheck: null,
     }
   },
   created(){
      bus.$on('visiable', data => {
         this.visiable = data;
     })
+  },
+  watch: {
+    '$route':function(to,from){
+      if(to.name === 'main' && from.name === 'shop') {
+         this.visiable = true;
+      }
+    }
   }
 }
 </script>
 
 
-<style lang="less">
+<style>
 *{
   margin: 0;
   padding: 0;
@@ -40,6 +47,11 @@ export default {
   height: 100vh;
   width: 100vw;
 }
-
+::-webkit-scrollbar {
+     width: 0 !important;
+   }
+   ::-webkit-scrollbar {
+     width: 0 !important;height: 0;
+   }
 
 </style>

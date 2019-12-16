@@ -15,6 +15,21 @@ const routes = [
     component: () => import('../views/msite/index.vue'),
   },
   {
+    path: '/shop',
+    name: 'shop',
+    component: () => import('../views/shop/index.vue'),
+  },
+  {
+    path: '/checkout',
+    name: 'checkout',
+    component: () => import('../views/checkout/index.vue'),
+  },
+  {
+    path: '/payment',
+    name: 'payment',
+    component: () => import('../views/payment/index.vue'),
+  },
+  {
     path: '/discover',
     name: 'discover',
     component: () => import('../views/discover/index.vue'),

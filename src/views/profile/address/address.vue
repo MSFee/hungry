@@ -41,7 +41,9 @@ export default {
       bus.$emit('visiable',false);
     },
     goBack(){
-      this.$router.back(-1);
+      this.$router.push({
+      path: '/profile',
+      });
     },
     addNewAddress(){
         this.$router.push({

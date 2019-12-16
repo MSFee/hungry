@@ -6,13 +6,15 @@
           <div v-if="loadingLocation">正在识别地址...</div>
           <div v-else> {{initLocation}}<van-icon class="msite_location_arrow" name="arrow-down" /> </div>
         </div>
-        <div class="msite_search">
-          <div class="msite_search_content">
-            <van-cell-group>
-              <van-field v-model="value" placeholder="搜索饿了么商家、商品名称" />
-            </van-cell-group> 
-            </div>
-        </div>
+        <van-sticky>
+          <div class="msite_search">
+            <div class="msite_search_content">
+                 <van-cell-group>
+                  <van-field input-align="center" v-model="value" placeholder="搜索饿了么商家、商品名称" />
+               </van-cell-group> 
+              </div>
+          </div>
+        </van-sticky>
     </div>
   <div v-if="successLoadingLocation">
     <div class="msite_allogo">
@@ -117,7 +119,6 @@ export default {
 						map.addOverlay(mk);
             map.panTo(r.point);
             const address = r.address;
-            console.log(r);
             if(address.district === '') {
               _this.initLocation = '未能获取地址' ;
                _this.successLoadingLocation = true;
@@ -148,7 +149,7 @@ export default {
   },
   created(){
     this.getImg();
-  }
+  },
 }
 </script>
 <style lang="less">
@@ -182,15 +183,22 @@ export default {
    background: rgb(0,137,255);
    height: 100px;
    overflow: hidden;
-   padding-left: 14px;
-   padding-right: 14px;
+   box-sizing: border-box;
+  .msite_search {
+    padding: 7px 14px;
+    background: rgb(0,137,255);
+    .van-field {
+      height: 50px;
+    }
+  }
   .msite_location{
     display: flex;
-    margin-top: 9px;
+    margin-top: 10px;
+    // margin-top: 9px;
     font-size: 18px;
     font-weight: 700;
-    margin-bottom: 12px;
     align-items: baseline;
+    padding-left: 14px;
     color: white;
     &_arrow {
       margin-left: 5px;

@@ -11,14 +11,21 @@
 
 <script>
 export default {
- data(){
+  // props: ['active'],
+  data(){
     return {
-      active: 0,
+       active: 0,
     }
   },
+  methods: {
+    changeStatus(){
+      // this.actives = this.active;
+    }
+  },
+  mounted(){
+  }
 }
 </script>
-
 <style lang="less">
 #nav {
   position: fixed;

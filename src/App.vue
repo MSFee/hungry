@@ -38,6 +38,9 @@ export default {
   margin: 0;
   padding: 0;
 }
+html {
+   touch-action: none;
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
    font-size: 16px;

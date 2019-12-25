@@ -63,19 +63,19 @@
             <div class="shop_topList">
               <div v-for="(item,index) in shop_list" :key="index" class="shop_list">
                 <img
-                  src="https://cube.elemecdn.com/5/31/f465010a329b5fce6a118e8e8500ejpeg.jpeg?x-oss-process=image/resize,m_lfit,w_240/watermark,g_se,x_4,y_4,image_YS8xYS82OGRlYzVjYTE0YjU1ZjJlZmFhYmIxMjM4Y2ZkZXBuZy5wbmc_eC1vc3MtcHJvY2Vzcz1pbWFnZS9yZXNpemUsUF8yOA%3D%3D/quality,q_90/format,webp"
+                  :src="item.img_url"
                 />
-                <div class="shop_list_name">湘味小炒肉</div>
+                <div class="shop_list_name">{{ item.name }}</div>
                 <div class="shop_list_rate">
-                  <span>月售240</span>
-                  <span>好评率95%</span>
+                  <span>月售{{ item.sell }}</span>
+                  <span>好评率{{ item.rate }}%</span>
                 </div>
                 <div class="shop_list_much">
                   <span>
-                    <span>￥</span>18
+                    <span>￥</span>{{ item.sale }}
                   </span>
                   <div class="shop_list_much_number">
-                    <span>
+                    <span @click="deleteShop(item)" v-if="item.count > 0">
                       <svg
                         t="1575809640099"
                         class="icon"
@@ -98,8 +98,10 @@
                         />
                       </svg>
                     </span>
-                    <span>1</span>
-                    <span>
+                    <span v-else class="hidden" />
+                    <span v-if="item.count > 0">{{ item.count }}</span>
+                    <span v-else class="hidden" />
+                    <span @click="addShop(item)">
                       <svg
                         t="1575809218112"
                         class="icon"
@@ -312,7 +314,7 @@
                   </van-dropdown-item>
                 </van-dropdown-menu>
               </div>
-              <div class="shop_order_sendfee">
+              <div :class="!shopCount ? 'needMarginTop' : null" class="shop_order_sendfee">
                 <p v-if="!shopFee">未选购商品</p>
                 <p v-if="!shopFee">另需配送费2元</p>
                 <p class="chioseFee" v-if="shopFee">￥{{ shopFee }}</p>
@@ -356,7 +358,7 @@ export default {
       },
       activeName: "a",
       rate_value: 5,
-      shop_list: [1, 2, 3, 4, 5, 6],
+      shop_list: [],
       menus_list: [],
       scrollY: 0, //获取实时滚动位置
       heightList: [], //获取每一个li的高度
@@ -412,7 +414,19 @@ export default {
             res.list[i].foods[j].count = 0;
           }
         }
-        this.menus_list = res.list;
+        this.menus_list = res.list;        
+        const arr = [];
+        for(let i=0;i<3;i++) {
+           for(let item of res.list[i].foods){
+             arr.push(item);
+           }
+        }
+        const tem = Math.ceil(Math.random() * 5) + 3;
+        for(let i=0;i< tem;i++) {
+          let random = Math.floor(Math.random() * arr.length);
+          this.shop_list.push(arr[random]);
+          arr.splice(random, 1);
+        }
         this.$nextTick(() => {
           this._scrollInit();
           this.getHeight();
@@ -426,32 +440,34 @@ export default {
       let foodList = this.$refs.foodWrapper.getElementsByClassName;
     },
     // 清空已选择的商品
-    clearShop(){
+    clearShop() {
       this.selectedItems = [];
       this.shopFee = 0;
       this.shopCount = 0;
       this.poorFee = 0;
       this.menus_list.map(item => {
-        for(let i=0;i<item.foods.length;i++) {
-           item.foods[i].count = 0;
+        for (let i = 0; i < item.foods.length; i++) {
+          item.foods[i].count = 0;
         }
-      })
+      });
       this.$refs.item.toggle();
     },
     // 点击减号删除商品
     deleteShop(item) {
       const sale = item.sale;
       this.shopFee -= sale;
-      for(let i=0;i<this.selectedItems.length;i++) {
-        if(this.selectedItems[i].food_id === item.food_id) {
-            this.selectedItems[i].totalPrice = Number((this.selectedItems[i].totalPrice - item.sale).toFixed(1));
-            this.selectedItems[i].count --;
+      for (let i = 0; i < this.selectedItems.length; i++) {
+        if (this.selectedItems[i].food_id === item.food_id) {
+          this.selectedItems[i].totalPrice = Number(
+            (this.selectedItems[i].totalPrice - item.sale).toFixed(1)
+          );
+          this.selectedItems[i].count--;
         }
-        if(this.selectedItems[i].count === 0) {
+        if (this.selectedItems[i].count === 0) {
           this.selectedItems.splice(i, 1);
         }
       }
-      if (Math.floor(sale) !== sale) {
+      if (Math.floor(sale) !== sale || Math.floor(this.shopFee) !== this.shopFee) {
         this.shopFee = Number(this.shopFee.toFixed(1));
       }
       this.poorFee = (15 - this.shopFee).toFixed(1);
@@ -471,20 +487,23 @@ export default {
       let sale = item.sale;
       this.shopFee += sale;
       let flag = false;
-      for(let i=0;i<this.selectedItems.length;i++) {
-        if(this.selectedItems[i].food_id === item.food_id) {
-            this.selectedItems[i].totalPrice = Number((this.selectedItems[i].totalPrice + item.sale).toFixed(1));
-            this.selectedItems[i].count ++;
-            flag = true;
+      for (let i = 0; i < this.selectedItems.length; i++) {
+        if (this.selectedItems[i].food_id === item.food_id) {
+          this.selectedItems[i].totalPrice = Number(
+            (this.selectedItems[i].totalPrice + item.sale).toFixed(1)
+          );
+          this.selectedItems[i].count++;
+          flag = true; 
         }
       }
-      if(!flag) {
+      if (!flag) {
         const shopObj = {
           food_id: item.food_id,
           totalPrice: item.sale,
           sale: item.sale,
           count: 1,
-          name: item.name,
+          menus_id: item.menus_id,
+          name: item.name
         };
         this.selectedItems.push(shopObj);
       }
@@ -509,10 +528,10 @@ export default {
       }
     },
     // 结算
-    toSettlement(){
-        this.$router.push({
-          name: 'checkout',
-        })
+    toSettlement() {
+      this.$router.push({
+        name: "checkout"
+      });
     }
   },
   created() {
@@ -566,6 +585,9 @@ export default {
 }
 .hidden {
   visibility: hidden;
+}
+.needMarginTop {
+  margin-top: 9px;
 }
 .shop {
   width: 100%;
@@ -693,6 +715,9 @@ export default {
     margin-top: 10px;
     .van-sticky--fixed {
       z-index: 0 !important;
+    }
+    .van-tabs__line {
+      z-index: 0;
     }
     .shop_banner {
       width: 100%;
@@ -824,12 +849,14 @@ export default {
     .item {
       display: flex;
       justify-content: space-between;
+      width: 100%;
       img {
-        width: 110px;
+        width: 30%;
         height: 100%;
       }
       .food_item {
-        margin-left: 10px;
+        width: 69%;
+        overflow: hidden;
         h4 {
           width: 160px;
           text-overflow: ellipsis;
@@ -858,10 +885,10 @@ export default {
   }
   .food_bottom {
     margin-top: 30px;
+    width: 100%;
     display: flex;
     justify-content: space-between;
-    width: 50%;
-    span:first-of-type {
+     > span:first-of-type {
       color: red;
       width: 20%;
       span:first-of-type {
@@ -874,14 +901,15 @@ export default {
     div {
       height: 20px;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
+      margin-right: 10px;
       span:first-of-type {
-        margin-left: 55px;
+        // margin-left: 55px;
       }
       span {
-        margin-left: 10px;
+        display: inline-block;
         width: 30px;
-        height: 20px;
+        height: 23px;
         text-align: center;
       }
     }
@@ -893,6 +921,7 @@ export default {
     background: rgb(80, 80, 82);
     bottom: 0;
     display: flex;
+    justify-content: space-between;
     &_shoppingcar {
       border-radius: 50%;
       height: 30px;
@@ -966,17 +995,17 @@ export default {
       }
     }
     &_sendfee {
-      margin-left: 20px;
-      margin-top: 5px;
       font-size: 12px;
       color: #999;
       .chioseFee {
         width: 80px;
         color: #fff;
-        height: 30px;
+        height: 50px;
         font-size: 18px;
         text-align: center;
-        line-height: 30px;
+        display: flex;
+        align-items: center; 
+        justify-content: center;     
       }
     }
     &_much {
@@ -987,7 +1016,6 @@ export default {
       line-height: 50px;
       width: 110px;
       text-align: center;
-      margin-left: 86px;
     }
   }
 }
